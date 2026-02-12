@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 # ---------- הגדרות דף ----------
 st.set_page_config(page_title="THE AUDITOR", page_icon="🛡️", layout="centered")
 
-# ---------- CSS אגרסיבי - תיקון יישור לימין (RTL) ----------
+# ---------- CSS אגרסיבי - תיקון הצמדה לימין של צ'קבוקסים ----------
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@800;900&display=swap');
@@ -18,7 +18,7 @@ st.markdown("""
     
     .stApp { background-color: #000000; }
     
-    /* כותרת AUDITOR ענקית - מוצמדת לימין */
+    /* כותרת AUDITOR ענקית */
     .main-title {
         color: #00FFCC !important;
         font-size: 6rem !important;
@@ -30,7 +30,6 @@ st.markdown("""
         width: 100%;
     }
     
-    /* תת כותרת - מוצמדת לימין */
     .sub-title {
         color: #FFFFFF !important;
         font-size: 2rem !important;
@@ -41,32 +40,39 @@ st.markdown("""
         width: 100%;
     }
 
-    /* כותרות סקשנים */
     h4 {
         color: #00FFCC !important;
         font-size: 2.2rem !important;
         font-weight: 900 !important;
         border-bottom: 4px solid #00FFCC;
-        display: table; /* גורם לפס התחתון להתאים לאורך הטקסט */
+        display: table;
         margin-bottom: 15px !important;
         margin-right: 0 !important;
         margin-left: auto !important;
     }
 
-    /* טקסטים לבנים בוהקים */
+    /* תיקון צ'קבוקסים - הזזת הקובייה לימין */
+    [data-baseweb="checkbox"] {
+        direction: rtl !important;
+        display: flex !important;
+        flex-direction: row-reverse !important; /* שם את הריבוע מימין לטקסט */
+        justify-content: flex-end !important;
+        border: none !important;
+        padding: 5px 0 !important;
+    }
+    
+    /* רווח בין הריבוע לטקסט */
+    [data-baseweb="checkbox"] div {
+        margin-left: 10px !important;
+        margin-right: 0px !important;
+    }
+
     p, span, label, .stMarkdown {
         color: #FFFFFF !important;
         font-weight: 800 !important;
         font-size: 1.3rem !important;
     }
 
-    /* ניקוי הצ'קבוקסים ויישורם */
-    [data-baseweb="checkbox"] {
-        border: none !important;
-        flex-direction: row-reverse !important; /* דואג שהריבוע יהיה מימין לטקסט */
-    }
-
-    /* עיצוב תיבות מספרים */
     input {
         background-color: #111 !important;
         color: #00FFCC !important;
@@ -75,7 +81,6 @@ st.markdown("""
         text-align: center !important;
     }
 
-    /* כפתור הרצה - עצום */
     .stButton button {
         width: 100%;
         background-color: #00FFCC !important;
@@ -97,7 +102,6 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 def main():
-    # כותרות בעיצוב אישי מוצמדות לימין
     st.markdown('<div class="main-title">AUDITOR</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">מערכת אימות אמינות משתמשים</div>', unsafe_allow_html=True)
 
