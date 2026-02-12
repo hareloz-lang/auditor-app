@@ -2,113 +2,75 @@ import streamlit as st
 import plotly.graph_objects as go
 
 # ---------- הגדרות דף ----------
-st.set_page_config(
-    page_title="The Authenticity Auditor | בדיקת אמינות",
-    page_icon="🛡️",
-    layout="centered",
-)
+st.set_page_config(page_title="The Authenticity Auditor", page_icon="🛡️", layout="centered")
 
-# ---------- עיצוב RTL ועברית ----------
+# ---------- עיצוב מתקדם ----------
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap');
-    
-    html, body, [class*="st-"] {
-        direction: RTL;
-        text-align: right;
-        font-family: 'Assistant', sans-serif;
-    }
-    .stApp {
-        background: radial-gradient(circle at top, #0f172a 0, #020617 100%);
-        color: #e5e7eb;
-    }
-    .main-card {
-        background: rgba(30, 41, 59, 0.7);
-        padding: 2rem;
-        border-radius: 15px;
-        border: 1px solid rgba(255,255,255,0.1);
-        margin-bottom: 2rem;
-    }
-    .stNumberInput label, .stRadio label {
-        color: #9ca3af !important;
-        font-weight: bold;
-    }
+    html, body, [class*="st-"] { direction: RTL; text-align: right; font-family: 'Assistant', sans-serif; }
+    .stApp { background-color: #0e1117; color: #ffffff; }
+    .stRadio > label { font-size: 1.2rem !important; font-weight: bold; color: #00ffcc !important; }
     </style>
     """, unsafe_allow_html=True)
 
-def calculate_risk(followers, likes, comments, questions_score):
-    risk_score = questions_score
-    
-    # חישוב Engagement Rate
-    if followers > 0:
-        er = (likes + comments) / followers
-        # אם ה-ER נמוך מ-1% בחשבון גדול, זה חשוד
-        if followers > 5000 and er < 0.01:
-            risk_score += 20
-    
-    return min(risk_score, 100)
-
 def main():
     st.title("🛡️ The Authenticity Auditor")
-    st.subheader("כלי לבדיקת אמינות סרטוני השקעות והזדמנויות עסקיות")
-    
-    st.markdown('<div class="main-card">', unsafe_allow_html=True)
-    
-    # --- שלב 1: נתונים יבשים ---
-    st.write("### 1. נתונים יבשים מהפרופיל")
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        followers = st.number_input("מספר עוקבים", min_value=0, value=0)
-    with col2:
-        likes = st.number_input("לייקים ממוצע לסרטון", min_value=0, value=0)
-    with col3:
-        comments = st.number_input("כמות תגובות", min_value=0, value=0)
+    st.subheader("גרסה 1.1 - זיהוי הונאות והבטחות שווא")
 
-    st.write("---")
-
-    # --- שלב 2: שאלון אדום ---
-    st.write("### 2. סימנים אדומים (Red Flags)")
-    
-    q1 = st.radio("האם ההבטחה נשמעת 'טובה מכדי להיות אמיתית'? (כסף קל, תשואה מובטחת)", ["לא", "אולי", "כן"])
-    q2 = st.radio("האם התגובות סגורות או נראות מוגבלות מאוד?", ["לא", "אולי", "כן"])
-    q3 = st.radio("האם יש לחץ זמן קיצוני? ('נשארו מקומות אחרונים', 'עוד 5 דקות הלינק נסגר')", ["לא", "אולי", "כן"])
-    q4 = st.radio("האם היוצר מפנה אתכם לשיחה פרטית בטלגרם או בוואטסאפ במקום אתר רשמי?", ["לא", "אולי", "כן"])
-
-    # חישוב ציון שאלון
-    mapping = {"לא": 0, "אולי": 10, "כן": 20}
-    questions_score = mapping[q1] + mapping[q2] + mapping[q3] + mapping[q4]
-    
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    # --- שלב 3: תוצאות ---
-    if st.button("נתח רמת סיכון"):
-        final_score = calculate_risk(followers, likes, comments, questions_score)
+    # --- נתונים יבשים ---
+    with st.expander("📊 שלב א': נתוני חשבון (Engagement)", expanded=True):
+        col1, col2 = st.columns(2)
+        with col1:
+            followers = st.number_input("כמות עוקבים", min_value=0, value=1000)
+        with col2:
+            likes = st.number_input("ממוצע לייקים לסרטון", min_value=0, value=10)
         
-        # בניית מד ה-Gauge
+        er = (likes / followers) * 100 if followers > 0 else 0
+        st.info(f"אחוז מעורבות (ER): {er:.2f}%")
+
+    # --- שאלון אדום ---
+    st.write("### 🚩 שלב ב': סימנים אדומים (Red Flags)")
+    
+    q1 = st.checkbox("הבטחה לרווח מהיר / 'כסף בזמן שינה'")
+    q2 = st.checkbox("הצגת עושר מוגזם (מכוניות יוקרה, ערימות מזומנים, דובאי)")
+    q3 = st.checkbox("לחץ זמן מסיבי ('רק ל-24 שעות הקרובות', 'מקומות אחרונים')")
+    q4 = st.checkbox("חוסר שקיפות: אין שם חברה רשום או כתובת משרדים")
+    q5 = st.checkbox("הפניה לוואטסאפ/טלגרם במקום אתר סליקה רשמי")
+    q6 = st.checkbox("תגובות בסרטון נראות גנריות ('מדהים!', 'שינית לי את החיים')")
+
+    # חישוב ציון
+    score = 0
+    if er < 1 and followers > 5000: score += 30  # חשד לעוקבים קנויים
+    if q1: score += 25
+    if q2: score += 15
+    if q3: score += 15
+    if q4: score += 20
+    if q5: score += 15
+    if q6: score += 10
+    
+    final_score = min(score, 100)
+
+    if st.button("בצע ניתוח סופי"):
+        st.write("---")
+        # מד Gauge
         fig = go.Figure(go.Indicator(
             mode = "gauge+number",
             value = final_score,
-            title = {'text': "מדד סיכון (Risk Score)"},
             gauge = {
                 'axis': {'range': [None, 100]},
-                'bar': {'color': "#ef4444" if final_score > 60 else "#f59e0b" if final_score > 30 else "#10b981"},
-                'steps': [
-                    {'range': [0, 30], 'color': "rgba(16, 185, 129, 0.2)"},
-                    {'range': [30, 60], 'color': "rgba(245, 158, 11, 0.2)"},
-                    {'range': [60, 100], 'color': "rgba(239, 68, 68, 0.2)"}
-                ],
+                'bar': {'color': "red" if final_score > 50 else "orange" if final_score > 20 else "green"},
+                'steps': [{'range': [0, 25], 'color': "lightgreen"}, {'range': [25, 60], 'color': "yellow"}, {'range': [60, 100], 'color': "red"}]
             }
         ))
-        
-        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', font={'color': "white", 'family': "Assistant"})
         st.plotly_chart(fig)
 
         if final_score > 60:
-            st.error("⚠️ רמת סיכון גבוהה! מומלץ להתרחק ולבדוק היטב מי עומד מאחורי ההצעה.")
-        elif final_score > 30:
-            st.warning("🧐 ישנם סימנים חשודים. כדאי להצליב נתונים ולא לקבל החלטה פזיזה.")
+            st.error("❌ רמת סיכון גבוהה מאוד. רוב הסיכויים שמדובר בהונאה או שיווק אגרסיבי מדי.")
+        elif final_score > 25:
+            st.warning("⚠️ יש להיזהר. נתגלו מספר סימנים מחשידים. מומלץ לבצע בדיקת רקע בגוגל.")
         else:
-            st.success("✅ נראה תקין יחסית, אך תמיד יש להפעיל שיקול דעת עצמאי.")
+            st.success("✅ נראה אמין יחסית. תמיד כדאי להפעיל שיקול דעת.")
 
 if __name__ == "__main__":
     main()
