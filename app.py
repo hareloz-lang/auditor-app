@@ -76,4 +76,76 @@ st.markdown("""
         font-weight: 800 !important;
         font-size: 1.5rem !important;
         border-radius: 5px !important;
-        margin-top: 1
+        margin-top: 1rem !important;
+    }
+    
+    /* הסתרת רווחים מיותרים למעלה */
+    .block-container {
+        padding-top: 2rem !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+def main():
+    st.title("🛡️ AUDITOR")
+    st.subheader("ניתוח אמינות בזמן אמת")
+
+    # --- שלב א' ---
+    st.markdown("#### 📊 מעורבות (Engagement)")
+    col1, col2 = st.columns(2)
+    with col1:
+        followers = st.number_input("עוקבים", min_value=0, value=1000)
+    with col2:
+        likes = st.number_input("לייקים", min_value=0, value=10)
+    
+    er = (likes / followers) * 100 if followers > 0 else 0
+    st.write(f"ER: **{er:.2f}%**")
+
+    # --- שלב ב' ---
+    st.write("")
+    st.markdown("#### 🚩 סימנים מחשידים (Red Flags)")
+    q1 = st.checkbox("הבטחה לכסף מהיר / 'סודות'")
+    q2 = st.checkbox("מצג שווא של עושר (רכבים/מזומן)")
+    q3 = st.checkbox("לחץ זמן מניפולטיבי")
+    q4 = st.checkbox("חוסר בשקיפות / אין פנים")
+    q5 = st.checkbox("הפניה לטלגרם/וואטסאפ בלבד")
+    q6 = st.checkbox("תגובות חסומות או בוטים")
+
+    # חישוב
+    score = 0
+    if er < 1 and followers > 5000: score += 30
+    if q1: score += 25
+    if q2: score += 15
+    if q3: score += 15
+    if q4: score += 20
+    if q5: score += 15
+    if q6: score += 10
+    final_score = min(score, 100)
+
+    if st.button("הרץ בדיקה"):
+        fig = go.Figure(go.Indicator(
+            mode = "gauge+number",
+            value = final_score,
+            number = {'font': {'color': "#FFFFFF"}},
+            gauge = {
+                'axis': {'range': [None, 100], 'tickcolor': "#FFFFFF"},
+                'bar': {'color': "#FF4B4B" if final_score > 50 else "#00FFCC"},
+                'bgcolor': "#222222",
+                'steps': [
+                    {'range': [0, 50], 'color': "#004433"},
+                    {'range': [50, 100], 'color': "#440000"}
+                ],
+            }
+        ))
+        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', height=250, margin=dict(l=20, r=20, t=20, b=20))
+        st.plotly_chart(fig)
+
+        if final_score > 60:
+            st.error("🛑 רמת סיכון גבוהה!")
+        elif final_score > 25:
+            st.warning("⚠️ דגלים אדומים זוהו.")
+        else:
+            st.success("💎 נראה תקין.")
+
+if __name__ == "__main__":
+    main()
