@@ -4,34 +4,41 @@ import plotly.graph_objects as go
 # ---------- הגדרות דף ----------
 st.set_page_config(page_title="THE AUDITOR", page_icon="🛡️", layout="centered")
 
-# ---------- CSS אגרסיבי לניגודיות וכותרות ענק ----------
+# ---------- CSS אגרסיבי - תיקון יישור לימין (RTL) ----------
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@800;900&display=swap');
     
-    /* רקע שחור מוחלט */
+    /* הגדרות בסיס ויישור לימין */
+    html, body, [class*="st-"], .main-title, .sub-title { 
+        direction: RTL !important; 
+        text-align: right !important; 
+        font-family: 'Assistant', sans-serif; 
+    }
+    
     .stApp { background-color: #000000; }
     
-    /* כותרת AUDITOR ענקית */
+    /* כותרת AUDITOR ענקית - מוצמדת לימין */
     .main-title {
         color: #00FFCC !important;
-        font-family: 'Assistant', sans-serif;
         font-size: 6rem !important;
         font-weight: 900 !important;
         line-height: 0.8 !important;
-        text-align: center;
-        margin-bottom: 0px !important;
+        margin-bottom: 5px !important;
         letter-spacing: -2px;
+        display: block;
+        width: 100%;
     }
     
-    /* תת כותרת */
+    /* תת כותרת - מוצמדת לימין */
     .sub-title {
         color: #FFFFFF !important;
         font-size: 2rem !important;
         font-weight: 800 !important;
-        text-align: center;
-        margin-top: -10px !important;
+        margin-top: 0px !important;
         margin-bottom: 30px !important;
+        display: block;
+        width: 100%;
     }
 
     /* כותרות סקשנים */
@@ -40,24 +47,23 @@ st.markdown("""
         font-size: 2.2rem !important;
         font-weight: 900 !important;
         border-bottom: 4px solid #00FFCC;
-        display: inline-block;
+        display: table; /* גורם לפס התחתון להתאים לאורך הטקסט */
         margin-bottom: 15px !important;
+        margin-right: 0 !important;
+        margin-left: auto !important;
     }
 
-    /* טקסטים לבנים בוהקים - ביטול קווי מתאר */
+    /* טקסטים לבנים בוהקים */
     p, span, label, .stMarkdown {
         color: #FFFFFF !important;
         font-weight: 800 !important;
         font-size: 1.3rem !important;
-        border: none !important;
     }
 
-    /* ניקוי הצ'קבוקסים מהמסגרת הלבנה הדקה */
+    /* ניקוי הצ'קבוקסים ויישורם */
     [data-baseweb="checkbox"] {
         border: none !important;
-    }
-    .stCheckbox label span {
-        border: none !important;
+        flex-direction: row-reverse !important; /* דואג שהריבוע יהיה מימין לטקסט */
     }
 
     /* עיצוב תיבות מספרים */
@@ -66,11 +72,8 @@ st.markdown("""
         color: #00FFCC !important;
         font-size: 1.5rem !important;
         border: 2px solid #333 !important;
+        text-align: center !important;
     }
-
-    /* ביטול רווחים מיותרים */
-    .block-container { padding-top: 1rem !important; }
-    .stVerticalBlock { gap: 0.8rem !important; }
 
     /* כפתור הרצה - עצום */
     .stButton button {
@@ -84,13 +87,19 @@ st.markdown("""
         border: none !important;
         margin-top: 20px;
     }
+
+    /* התאמה לנייד */
+    @media (max-width: 640px) {
+        .main-title { font-size: 4rem !important; }
+        .sub-title { font-size: 1.5rem !important; }
+    }
     </style>
     """, unsafe_allow_html=True)
 
 def main():
-    # כותרות בעיצוב אישי
-    st.markdown('<p class="main-title">AUDITOR</p>', unsafe_allow_html=True)
-    st.markdown('<p class="sub-title">מערכת אימות אמינות משתמשים</p>', unsafe_allow_html=True)
+    # כותרות בעיצוב אישי מוצמדות לימין
+    st.markdown('<div class="main-title">AUDITOR</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-title">מערכת אימות אמינות משתמשים</div>', unsafe_allow_html=True)
 
     # --- חלק א' ---
     st.markdown("#### 📊 מדד אמינות קהילה")
@@ -102,7 +111,6 @@ def main():
     
     er = (likes / followers) * 100 if followers > 0 else 0
     
-    # הסבר ה-ER בצורה ברורה
     if er < 1:
         st.markdown(f"🔴 **רמת סנכרון קהל נמוכה מאוד: {er:.2f}% (חשד כבד לבוטים)**")
     else:
@@ -118,7 +126,7 @@ def main():
     q5 = st.checkbox("הפניה לערוצים לא רשמיים (טלגרם)")
     q6 = st.checkbox("חסימת ביקורת ותגובות")
 
-    # חישוב ציון
+    # חישוב
     score = 0
     if er < 1 and followers > 2000: score += 35
     if q1: score += 25
@@ -131,7 +139,6 @@ def main():
 
     st.write("")
     if st.button("בצע אימות"):
-        # גרף Gauge
         fig = go.Figure(go.Indicator(
             mode = "gauge+number",
             value = final_score,
