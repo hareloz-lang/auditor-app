@@ -100,7 +100,7 @@ def main():
             st.success("💎 אימות עבר בהצלחה.")
 
         # --- יצירת לינק שיתוף לוואטסאפ ---
-        app_url = "https://auditor-app.streamlit.app" # שנה ללינק האמיתי שלך
+        https://auditor-app-7clswzggcjo9setfbyetqi.streamlit.app/ = "https://auditor-app.streamlit.app" # שנה ללינק האמיתי שלך
         msg = f"בדקתי סרטון ב-AUDITOR וקיבלתי מדד סיכון של {final_score}%! 🛡️\nמומלץ לבדוק לפני שמאמינים למפרסמים ברשת:\n{app_url}"
         whatsapp_url = f"https://wa.me/?text={urllib.parse.quote(msg)}"
         
