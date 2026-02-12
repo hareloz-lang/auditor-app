@@ -2,118 +2,125 @@ import streamlit as st
 import plotly.graph_objects as go
 
 # ---------- הגדרות דף ----------
-st.set_page_config(page_title="The Authenticity Auditor", page_icon="🛡️", layout="centered")
+st.set_page_config(page_title="THE AUDITOR", page_icon="🛡️", layout="centered")
 
-# ---------- עיצוב דחוס עם ניגודיות מקסימלית ----------
+# ---------- CSS אגרסיבי לניגודיות וכותרות ענק ----------
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@800;900&display=swap');
     
-    /* הגדרות בסיס - דחיסות שורות */
-    html, body, [class*="st-"] { 
-        direction: RTL; 
-        text-align: right; 
-        font-family: 'Assistant', sans-serif; 
-        line-height: 1.2 !important; 
-    }
-    
+    /* רקע שחור מוחלט */
     .stApp { background-color: #000000; }
-
-    /* כותרות ענק */
-    h1 {
+    
+    /* כותרת AUDITOR ענקית */
+    .main-title {
         color: #00FFCC !important;
-        font-size: 3.5rem !important;
-        font-weight: 800 !important;
-        margin-bottom: 0.5rem !important;
-        padding-top: 0rem !important;
+        font-family: 'Assistant', sans-serif;
+        font-size: 6rem !important;
+        font-weight: 900 !important;
+        line-height: 0.8 !important;
+        text-align: center;
+        margin-bottom: 0px !important;
+        letter-spacing: -2px;
     }
-    h3 {
+    
+    /* תת כותרת */
+    .sub-title {
         color: #FFFFFF !important;
-        font-size: 1.8rem !important;
-        font-weight: 700 !important;
-        margin-top: -1rem !important;
-        margin-bottom: 1rem !important;
+        font-size: 2rem !important;
+        font-weight: 800 !important;
+        text-align: center;
+        margin-top: -10px !important;
+        margin-bottom: 30px !important;
     }
+
+    /* כותרות סקשנים */
     h4 {
         color: #00FFCC !important;
-        font-size: 1.4rem !important;
-        margin-bottom: 0.5rem !important;
+        font-size: 2.2rem !important;
+        font-weight: 900 !important;
+        border-bottom: 4px solid #00FFCC;
+        display: inline-block;
+        margin-bottom: 15px !important;
     }
 
-    /* טקסט לבן בוהק ודחוס */
+    /* טקסטים לבנים בוהקים - ביטול קווי מתאר */
     p, span, label, .stMarkdown {
         color: #FFFFFF !important;
-        font-weight: 700 !important;
-        font-size: 1.1rem !important;
+        font-weight: 800 !important;
+        font-size: 1.3rem !important;
+        border: none !important;
     }
 
-    /* צמצום רווחים בין אלמנטים של Streamlit */
-    .stVerticalBlock {
-        gap: 0.5rem !important;
+    /* ניקוי הצ'קבוקסים מהמסגרת הלבנה הדקה */
+    [data-baseweb="checkbox"] {
+        border: none !important;
+    }
+    .stCheckbox label span {
+        border: none !important;
     }
 
-    /* עיצוב צ'קבוקסים דחוסים */
-    .stCheckbox {
-        margin-bottom: -0.8rem !important;
-    }
-    .stCheckbox label {
-        background-color: #111111;
-        padding: 5px 12px !important;
-        border-radius: 5px;
-        border: 1px solid #333;
+    /* עיצוב תיבות מספרים */
+    input {
+        background-color: #111 !important;
+        color: #00FFCC !important;
+        font-size: 1.5rem !important;
+        border: 2px solid #333 !important;
     }
 
-    /* תיבות קלט */
-    .stNumberInput {
-        margin-bottom: -1rem !important;
-    }
+    /* ביטול רווחים מיותרים */
+    .block-container { padding-top: 1rem !important; }
+    .stVerticalBlock { gap: 0.8rem !important; }
 
-    /* כפתור דומיננטי */
+    /* כפתור הרצה - עצום */
     .stButton button {
         width: 100%;
         background-color: #00FFCC !important;
-        color: #000000 !important;
-        font-weight: 800 !important;
-        font-size: 1.5rem !important;
-        border-radius: 5px !important;
-        margin-top: 1rem !important;
-    }
-    
-    /* הסתרת רווחים מיותרים למעלה */
-    .block-container {
-        padding-top: 2rem !important;
+        color: #000 !important;
+        font-size: 2.5rem !important;
+        font-weight: 900 !important;
+        height: 80px !important;
+        border-radius: 0px !important;
+        border: none !important;
+        margin-top: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
 
 def main():
-    st.title("🛡️ AUDITOR")
-    st.subheader("ניתוח אמינות בזמן אמת")
+    # כותרות בעיצוב אישי
+    st.markdown('<p class="main-title">AUDITOR</p>', unsafe_allow_html=True)
+    st.markdown('<p class="sub-title">מערכת אימות אמינות משתמשים</p>', unsafe_allow_html=True)
 
-    # --- שלב א' ---
-    st.markdown("#### 📊 מעורבות (Engagement)")
+    # --- חלק א' ---
+    st.markdown("#### 📊 מדד אמינות קהילה")
     col1, col2 = st.columns(2)
     with col1:
-        followers = st.number_input("עוקבים", min_value=0, value=1000)
+        followers = st.number_input("עוקבים בחשבון", min_value=0, value=1000)
     with col2:
-        likes = st.number_input("לייקים", min_value=0, value=10)
+        likes = st.number_input("לייקים ממוצעים", min_value=0, value=10)
     
     er = (likes / followers) * 100 if followers > 0 else 0
-    st.write(f"ER: **{er:.2f}%**")
+    
+    # הסבר ה-ER בצורה ברורה
+    if er < 1:
+        st.markdown(f"🔴 **רמת סנכרון קהל נמוכה מאוד: {er:.2f}% (חשד כבד לבוטים)**")
+    else:
+        st.markdown(f"🟢 **רמת סנכרון קהל: {er:.2f}%**")
 
-    # --- שלב ב' ---
+    # --- חלק ב' ---
     st.write("")
-    st.markdown("#### 🚩 סימנים מחשידים (Red Flags)")
-    q1 = st.checkbox("הבטחה לכסף מהיר / 'סודות'")
-    q2 = st.checkbox("מצג שווא של עושר (רכבים/מזומן)")
-    q3 = st.checkbox("לחץ זמן מניפולטיבי")
-    q4 = st.checkbox("חוסר בשקיפות / אין פנים")
-    q5 = st.checkbox("הפניה לטלגרם/וואטסאפ בלבד")
-    q6 = st.checkbox("תגובות חסומות או בוטים")
+    st.markdown("#### 🚩 דגלי אמינות")
+    q1 = st.checkbox("הבטחה לכסף מהיר / 'ללא מאמץ'")
+    q2 = st.checkbox("מפגן עושר מוגזם (מזויף/שכור)")
+    q3 = st.checkbox("יצירת בהלה ולחץ זמן")
+    q4 = st.checkbox("זהות מטושטשת / אין פנים לעסק")
+    q5 = st.checkbox("הפניה לערוצים לא רשמיים (טלגרם)")
+    q6 = st.checkbox("חסימת ביקורת ותגובות")
 
-    # חישוב
+    # חישוב ציון
     score = 0
-    if er < 1 and followers > 5000: score += 30
+    if er < 1 and followers > 2000: score += 35
     if q1: score += 25
     if q2: score += 15
     if q3: score += 15
@@ -122,30 +129,32 @@ def main():
     if q6: score += 10
     final_score = min(score, 100)
 
-    if st.button("הרץ בדיקה"):
+    st.write("")
+    if st.button("בצע אימות"):
+        # גרף Gauge
         fig = go.Figure(go.Indicator(
             mode = "gauge+number",
             value = final_score,
-            number = {'font': {'color': "#FFFFFF"}},
+            number = {'font': {'color': "#FFFFFF", 'size': 60}},
             gauge = {
-                'axis': {'range': [None, 100], 'tickcolor': "#FFFFFF"},
-                'bar': {'color': "#FF4B4B" if final_score > 50 else "#00FFCC"},
-                'bgcolor': "#222222",
+                'axis': {'range': [None, 100], 'tickcolor': "#FFFFFF", 'tickwidth': 3},
+                'bar': {'color': "#FF0000" if final_score > 50 else "#00FFCC"},
+                'bgcolor': "#111111",
                 'steps': [
-                    {'range': [0, 50], 'color': "#004433"},
-                    {'range': [50, 100], 'color': "#440000"}
+                    {'range': [0, 50], 'color': "#003322"},
+                    {'range': [50, 100], 'color': "#330000"}
                 ],
             }
         ))
-        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', height=250, margin=dict(l=20, r=20, t=20, b=20))
+        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', height=350)
         st.plotly_chart(fig)
 
         if final_score > 60:
-            st.error("🛑 רמת סיכון גבוהה!")
+            st.error("❌ אזהרה: נמצאה התאמה גבוהה לדפוס הונאה!")
         elif final_score > 25:
-            st.warning("⚠️ דגלים אדומים זוהו.")
+            st.warning("⚠️ חשד: קיימים ליקויים באמינות המפרסם.")
         else:
-            st.success("💎 נראה תקין.")
+            st.success("💎 אימות עבר בהצלחה: לא נמצאו דגלים אדומים.")
 
 if __name__ == "__main__":
     main()
