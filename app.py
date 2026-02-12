@@ -5,117 +5,35 @@ import urllib.parse
 # ---------- הגדרות דף ----------
 st.set_page_config(page_title="THE AUDITOR", page_icon="🛡️", layout="centered")
 
-# ---------- CSS סופי ומהודק ----------
+# ---------- CSS ----------
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@800;900&display=swap');
-    
-    /* הגדרות בסיס ויישור לימין */
-    html, body, [class*="st-"] { 
-        direction: rtl !important; 
-        text-align: right !important; 
-        font-family: 'Assistant', sans-serif; 
-    }
-    
+    html, body, [class*="st-"] { direction: rtl !important; text-align: right !important; font-family: 'Assistant', sans-serif; }
     .stApp { background-color: #000000; }
-    
-    /* כותרות ענק */
-    .main-title {
-        color: #00FFCC !important;
-        font-size: clamp(3rem, 10vw, 6rem) !important;
-        font-weight: 900 !important;
-        line-height: 0.8 !important;
-        margin-bottom: 5px !important;
-        letter-spacing: -2px;
-        text-align: right;
-    }
-    
-    .sub-title {
-        color: #FFFFFF !important;
-        font-size: 1.8rem !important;
-        font-weight: 800 !important;
-        margin-bottom: 20px !important;
-        text-align: right;
-    }
-
-    h4 {
-        color: #00FFCC !important;
-        font-size: 2rem !important;
-        font-weight: 900 !important;
-        border-bottom: 4px solid #00FFCC;
-        display: inline-block;
-        margin-bottom: 15px !important;
-    }
-
-    /* עיצוב צ'קבוקסים - ריבוע לשמאל, טקסט לימין */
-    [data-testid="stCheckbox"] label {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        padding: 10px !important;
-        background: #111;
-        margin-bottom: 5px;
-        border-radius: 4px;
-        border: none !important;
-    }
-
-    /* טקסטים לבנים בוהקים */
-    p, span, label, .stMarkdown {
-        color: #FFFFFF !important;
-        font-weight: 800 !important;
-        font-size: 1.2rem !important;
-    }
-
-    /* עיצוב תיבות קלט */
-    input {
-        background-color: #111 !important;
-        color: #00FFCC !important;
-        font-size: 1.3rem !important;
-        border: 2px solid #333 !important;
-        text-align: right !important;
-    }
-
-    /* כפתור הרצה עצום */
-    .stButton button {
-        width: 100%;
-        background-color: #00FFCC !important;
-        color: #000 !important;
-        font-size: 2.5rem !important;
-        font-weight: 900 !important;
-        height: 80px !important;
-        border-radius: 0px !important;
-        border: none !important;
-        margin-top: 20px;
-    }
-
-    /* כפתור וואטסאפ */
-    .whatsapp-button {
-        display: block;
-        background-color: #25D366;
-        color: white !important;
-        padding: 15px 20px;
-        text-decoration: none;
-        font-size: 1.5rem;
-        font-weight: 900;
-        border-radius: 5px;
-        text-align: center;
-        width: 100%;
-        margin-top: 20px;
-    }
+    .main-title { color: #00FFCC !important; font-size: clamp(3rem, 10vw, 6rem) !important; font-weight: 900 !important; line-height: 0.8 !important; margin-bottom: 5px !important; letter-spacing: -2px; text-align: right; }
+    .sub-title { color: #FFFFFF !important; font-size: 1.8rem !important; font-weight: 800 !important; margin-bottom: 20px !important; text-align: right; }
+    h4 { color: #00FFCC !important; font-size: 2rem !important; font-weight: 900 !important; border-bottom: 4px solid #00FFCC; display: inline-block; margin-bottom: 15px !important; }
+    [data-testid="stCheckbox"] label { display: flex !important; flex-direction: row !important; justify-content: space-between !important; align-items: center !important; padding: 10px !important; background: #111; margin-bottom: 5px; border-radius: 4px; border: none !important; }
+    p, span, label, .stMarkdown { color: #FFFFFF !important; font-weight: 800 !important; font-size: 1.2rem !important; }
+    input { background-color: #111 !important; color: #00FFCC !important; font-size: 1.3rem !important; border: 2px solid #333 !important; text-align: right !important; }
+    .stButton button { width: 100%; background-color: #00FFCC !important; color: #000 !important; font-size: 2.5rem !important; font-weight: 900 !important; height: 80px !important; border-radius: 0px !important; border: none !important; margin-top: 20px; }
+    .whatsapp-button { display: block; background-color: #25D366; color: white !important; padding: 15px 20px; text-decoration: none; font-size: 1.5rem; font-weight: 900; border-radius: 5px; text-align: center; width: 100%; margin-top: 20px; }
     </style>
     """, unsafe_allow_html=True)
 
 def main():
-    # כותרות
+    # אתחול הזיכרון (Session State)
+    if 'analyzed' not in st.session_state:
+        st.session_state.analyzed = False
+        st.session_state.final_score = 0
+
     st.markdown('<div class="main-title">AUDITOR</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">מערכת אימות אמינות משתמשים</div>', unsafe_allow_html=True)
 
-    # --- שדה לינק ---
     st.markdown("#### 🔗 לינק לסרטון הנבדק")
     video_url = st.text_input("", placeholder="הדבק כאן את הלינק לבדיקה")
 
-    # --- חלק א' ---
     st.write("")
     st.markdown("#### 📊 מדד אמינות קהילה")
     col1, col2 = st.columns(2)
@@ -131,7 +49,6 @@ def main():
     else:
         st.markdown(f"🟢 **סנכרון קהל: {er:.2f}%**")
 
-    # --- חלק ב' ---
     st.write("")
     st.markdown("#### 🚩 דגלי אמינות")
     q1 = st.checkbox("הבטחה לכסף מהיר / 'ללא מאמץ'")
@@ -154,14 +71,20 @@ def main():
 
     st.write("")
     if st.button("בצע אימות"):
-        # גרף Gauge
+        st.session_state.analyzed = True
+        st.session_state.final_score = final_score
+
+    # הצגת התוצאה אם בוצע ניתוח
+    if st.session_state.analyzed:
+        display_score = st.session_state.final_score
+        
         fig = go.Figure(go.Indicator(
             mode = "gauge+number",
-            value = final_score,
+            value = display_score,
             number = {'font': {'color': "#FFFFFF", 'size': 60}, 'suffix': "%"},
             gauge = {
                 'axis': {'range': [None, 100], 'tickcolor': "#FFFFFF", 'tickwidth': 3},
-                'bar': {'color': "#FF0000" if final_score > 50 else "#00FFCC"},
+                'bar': {'color': "#FF0000" if display_score > 50 else "#00FFCC"},
                 'bgcolor': "#111111",
                 'steps': [
                     {'range': [0, 50], 'color': "#003322"},
@@ -172,18 +95,16 @@ def main():
         fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', height=350, margin=dict(t=0, b=0))
         st.plotly_chart(fig)
 
-        if final_score > 60:
+        if display_score > 60:
             st.error("❌ אזהרה: נמצאה התאמה גבוהה לדפוס הונאה!")
-        elif final_score > 25:
+        elif display_score > 25:
             st.warning("⚠️ חשד: קיימים ליקויים באמינות.")
         else:
             st.success("💎 אימות עבר בהצלחה.")
 
-        # --- יצירת לינק שיתוף לוואטסאפ ---
-        # הלינק שלך מוטמע כאן:
+        # לינק שיתוף
         app_url = "https://auditor-app-7clswzggcjo9setfbyetqi.streamlit.app"
-        
-        msg = f"בדקתי סרטון ב-AUDITOR וקיבלתי מדד סיכון של {final_score}%! 🛡️\nמומלץ לבדוק לפני שמאמינים למפרסמים ברשת:\n{app_url}"
+        msg = f"בדקתי סרטון ב-AUDITOR וקיבלתי מדד סיכון של {display_score}%! 🛡️\nמומלץ לבדוק לפני שמאמינים למפרסמים ברשת:\n{app_url}"
         whatsapp_url = f"https://wa.me/?text={urllib.parse.quote(msg)}"
         
         st.markdown(f'<a href="{whatsapp_url}" target="_blank" class="whatsapp-button">שתף תוצאה בוואטסאפ 📱</a>', unsafe_allow_html=True)
