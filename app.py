@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 # ---------- הגדרות דף ----------
 st.set_page_config(page_title="THE AUDITOR", page_icon="🛡️", layout="centered")
 
-# ---------- CSS אגרסיבי - תיקון הצמדה לימין של צ'קבוקסים ----------
+# ---------- CSS אגרסיבי לתיקון הצ'קבוקסים והוספת לינק ----------
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@800;900&display=swap');
@@ -18,7 +18,7 @@ st.markdown("""
     
     .stApp { background-color: #000000; }
     
-    /* כותרת AUDITOR ענקית */
+    /* כותרות */
     .main-title {
         color: #00FFCC !important;
         font-size: 6rem !important;
@@ -32,55 +32,52 @@ st.markdown("""
     
     .sub-title {
         color: #FFFFFF !important;
-        font-size: 2rem !important;
+        font-size: 1.8rem !important;
         font-weight: 800 !important;
         margin-top: 0px !important;
-        margin-bottom: 30px !important;
+        margin-bottom: 20px !important;
         display: block;
         width: 100%;
     }
 
     h4 {
         color: #00FFCC !important;
-        font-size: 2.2rem !important;
+        font-size: 2rem !important;
         font-weight: 900 !important;
         border-bottom: 4px solid #00FFCC;
         display: table;
         margin-bottom: 15px !important;
-        margin-right: 0 !important;
-        margin-left: auto !important;
     }
 
-    /* תיקון צ'קבוקסים - הזזת הקובייה לימין */
-    [data-baseweb="checkbox"] {
-        direction: rtl !important;
-        display: flex !important;
-        flex-direction: row-reverse !important; /* שם את הריבוע מימין לטקסט */
-        justify-content: flex-end !important;
-        border: none !important;
-        padding: 5px 0 !important;
+    /* תיקון סופי לצ'קבוקסים - הזזת הריבוע לימין */
+    [data-testid="stCheckbox"] > label {
+        flex-direction: row-reverse !important;
+        width: 100% !important;
+        justify-content: flex-start !important;
+        gap: 15px !important;
     }
     
-    /* רווח בין הריבוע לטקסט */
-    [data-baseweb="checkbox"] div {
-        margin-left: 10px !important;
-        margin-right: 0px !important;
+    [data-testid="stCheckbox"] {
+        border: none !important;
     }
 
+    /* טקסטים לבנים בוהקים */
     p, span, label, .stMarkdown {
         color: #FFFFFF !important;
         font-weight: 800 !important;
         font-size: 1.3rem !important;
     }
 
+    /* עיצוב תיבות קלט (לינק ומספרים) */
     input {
         background-color: #111 !important;
         color: #00FFCC !important;
-        font-size: 1.5rem !important;
+        font-size: 1.3rem !important;
         border: 2px solid #333 !important;
-        text-align: center !important;
+        text-align: right !important;
     }
 
+    /* כפתור הרצה */
     .stButton button {
         width: 100%;
         background-color: #00FFCC !important;
@@ -105,7 +102,12 @@ def main():
     st.markdown('<div class="main-title">AUDITOR</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">מערכת אימות אמינות משתמשים</div>', unsafe_allow_html=True)
 
+    # --- שדה לינק חדש ---
+    st.markdown("#### 🔗 לינק לסרטון הנבדק")
+    video_url = st.text_input("הדבק כאן את הלינק (TikTok / Instagram)", placeholder="https://www.tiktok.com/@user/video/...")
+
     # --- חלק א' ---
+    st.write("")
     st.markdown("#### 📊 מדד אמינות קהילה")
     col1, col2 = st.columns(2)
     with col1:
@@ -116,7 +118,7 @@ def main():
     er = (likes / followers) * 100 if followers > 0 else 0
     
     if er < 1:
-        st.markdown(f"🔴 **רמת סנכרון קהל נמוכה מאוד: {er:.2f}% (חשד כבד לבוטים)**")
+        st.markdown(f"🔴 **רמת סנכרון קהל נמוכה מאוד: {er:.2f}%**")
     else:
         st.markdown(f"🟢 **רמת סנכרון קהל: {er:.2f}%**")
 
@@ -143,6 +145,9 @@ def main():
 
     st.write("")
     if st.button("בצע אימות"):
+        if not video_url:
+            st.warning("שים לב: לא הוזן לינק לסרטון, אך נבצע ניתוח לפי הנתונים שהזנת.")
+            
         fig = go.Figure(go.Indicator(
             mode = "gauge+number",
             value = final_score,
