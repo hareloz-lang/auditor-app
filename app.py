@@ -4,44 +4,106 @@ import plotly.graph_objects as go
 # ---------- הגדרות דף ----------
 st.set_page_config(page_title="The Authenticity Auditor", page_icon="🛡️", layout="centered")
 
-# ---------- עיצוב מתקדם ----------
+# ---------- עיצוב משופר עם ניגודיות גבוהה ----------
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700&display=swap');
-    html, body, [class*="st-"] { direction: RTL; text-align: right; font-family: 'Assistant', sans-serif; }
-    .stApp { background-color: #0e1117; color: #ffffff; }
-    .stRadio > label { font-size: 1.2rem !important; font-weight: bold; color: #00ffcc !important; }
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700;800&display=swap');
+    
+    /* הגדרות כלליות */
+    html, body, [class*="st-"] { 
+        direction: RTL; 
+        text-align: right; 
+        font-family: 'Assistant', sans-serif; 
+    }
+    
+    /* רקע וצבע טקסט ראשי */
+    .stApp { 
+        background-color: #000000; 
+    }
+    
+    /* טקסט לבן בוהק לכל האפליקציה */
+    p, span, label, .stMarkdown {
+        color: #FFFFFF !important;
+        font-weight: 500 !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* כותרות בולטות */
+    h1, h2, h3 {
+        color: #00FFCC !important; /* צבע טורקיז ניאון */
+        font-weight: 800 !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    /* עיצוב תיבות הקלט */
+    .stNumberInput input {
+        background-color: #1e1e1e !important;
+        color: #FFFFFF !important;
+        border: 1px solid #00FFCC !important;
+    }
+
+    /* עיצוב הצ'קבוקסים */
+    .stCheckbox label {
+        background-color: #1a1a1a;
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        display: block;
+        transition: 0.3s;
+    }
+    .stCheckbox label:hover {
+        border-color: #00FFCC;
+    }
+
+    /* כפתור הניתוח */
+    .stButton button {
+        width: 100%;
+        background-color: #00FFCC !important;
+        color: #000000 !important;
+        font-weight: bold !important;
+        font-size: 1.2rem !important;
+        border-radius: 10px !important;
+        height: 3em !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
 def main():
     st.title("🛡️ The Authenticity Auditor")
-    st.subheader("גרסה 1.1 - זיהוי הונאות והבטחות שווא")
+    st.markdown("### כלי הניתוח המקצועי לאמינות ברשת")
 
     # --- נתונים יבשים ---
-    with st.expander("📊 שלב א': נתוני חשבון (Engagement)", expanded=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            followers = st.number_input("כמות עוקבים", min_value=0, value=1000)
-        with col2:
-            likes = st.number_input("ממוצע לייקים לסרטון", min_value=0, value=10)
-        
-        er = (likes / followers) * 100 if followers > 0 else 0
-        st.info(f"אחוז מעורבות (ER): {er:.2f}%")
+    st.write("---")
+    st.markdown("#### 📊 שלב א': בדיקת מעורבות (Engagement)")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        followers = st.number_input("כמות עוקבים כוללת", min_value=0, value=1000, step=100)
+    with col2:
+        likes = st.number_input("ממוצע לייקים לסרטון", min_value=0, value=10, step=10)
+    
+    er = (likes / followers) * 100 if followers > 0 else 0
+    
+    # תצוגת ER בולטת
+    if er < 1 and followers > 2000:
+        st.error(f"אחוז מעורבות נמוך מאוד: {er:.2f}% (חשד לעוקבים קנויים)")
+    else:
+        st.info(f"אחוז מעורבות: {er:.2f}%")
 
     # --- שאלון אדום ---
-    st.write("### 🚩 שלב ב': סימנים אדומים (Red Flags)")
+    st.write("---")
+    st.markdown("#### 🚩 שלב ב': זיהוי דפוסי הונאה")
     
-    q1 = st.checkbox("הבטחה לרווח מהיר / 'כסף בזמן שינה'")
-    q2 = st.checkbox("הצגת עושר מוגזם (מכוניות יוקרה, ערימות מזומנים, דובאי)")
-    q3 = st.checkbox("לחץ זמן מסיבי ('רק ל-24 שעות הקרובות', 'מקומות אחרונים')")
-    q4 = st.checkbox("חוסר שקיפות: אין שם חברה רשום או כתובת משרדים")
-    q5 = st.checkbox("הפניה לוואטסאפ/טלגרם במקום אתר סליקה רשמי")
-    q6 = st.checkbox("תגובות בסרטון נראות גנריות ('מדהים!', 'שינית לי את החיים')")
+    q1 = st.checkbox("הבטחה לרווח מהיר / 'כסף בזמן שינה' / 'שיטה סודית'")
+    q2 = st.checkbox("מצג שווא של עושר (רכבי יוקרה מושכרים, ערימות מזומנים)")
+    q3 = st.checkbox("לחץ זמן מניפולטיבי ('נותרו 2 מקומות', 'הזדמנות של פעם בחיים')")
+    q4 = st.checkbox("חוסר בשקיפות (אין אתר רשמי, אין שם חברה, אין פנים מאחורי העסק)")
+    q5 = st.checkbox("הפניה לערוץ טלגרם סגור או לשיחת וואטסאפ אישית בלבד")
+    q6 = st.checkbox("תגובות חסומות או תגובות שנראות כמו בוטים גנריים")
 
-    # חישוב ציון
+    # לוגיקת חישוב
     score = 0
-    if er < 1 and followers > 5000: score += 30  # חשד לעוקבים קנויים
+    if er < 1 and followers > 5000: score += 30
     if q1: score += 25
     if q2: score += 15
     if q3: score += 15
@@ -51,26 +113,33 @@ def main():
     
     final_score = min(score, 100)
 
-    if st.button("בצע ניתוח סופי"):
-        st.write("---")
+    st.write("---")
+    if st.button("הפעל ניתוח סיכון"):
         # מד Gauge
         fig = go.Figure(go.Indicator(
             mode = "gauge+number",
             value = final_score,
+            number = {'font': {'color': "#FFFFFF", 'size': 50}},
             gauge = {
-                'axis': {'range': [None, 100]},
-                'bar': {'color': "red" if final_score > 50 else "orange" if final_score > 20 else "green"},
-                'steps': [{'range': [0, 25], 'color': "lightgreen"}, {'range': [25, 60], 'color': "yellow"}, {'range': [60, 100], 'color': "red"}]
+                'axis': {'range': [None, 100], 'tickcolor': "#FFFFFF"},
+                'bar': {'color': "#FF4B4B" if final_score > 50 else "#FFA500" if final_score > 20 else "#00FFCC"},
+                'bgcolor': "#1e1e1e",
+                'steps': [
+                    {'range': [0, 25], 'color': "#004d40"},
+                    {'range': [25, 60], 'color': "#4d3a00"},
+                    {'range': [60, 100], 'color': "#4d0000"}
+                ],
             }
         ))
+        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)', height=300)
         st.plotly_chart(fig)
 
         if final_score > 60:
-            st.error("❌ רמת סיכון גבוהה מאוד. רוב הסיכויים שמדובר בהונאה או שיווק אגרסיבי מדי.")
+            st.error("🛑 רמת סיכון גבוהה! יש כאן הצטברות משמעותית של סימני הונאה.")
         elif final_score > 25:
-            st.warning("⚠️ יש להיזהר. נתגלו מספר סימנים מחשידים. מומלץ לבצע בדיקת רקע בגוגל.")
+            st.warning("⚠️ זהירות. ישנם מספר 'דגלים אדומים'. מומלץ לבדוק ביקורות חיצוניות.")
         else:
-            st.success("✅ נראה אמין יחסית. תמיד כדאי להפעיל שיקול דעת.")
+            st.success("💎 נראה תקין. לא נמצאו דפוסים קלאסיים של הונאה.")
 
 if __name__ == "__main__":
     main()
