@@ -41,4 +41,87 @@ def main():
     st.markdown('<div class="main-title">AUDITOR</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">מערכת אימות אמינות משתמשים</div>', unsafe_allow_html=True)
 
-    st.text_input("🔗 לינק לסרטון", placeholder="ה
+    st.text_input("🔗 לינק לסרטון", placeholder="הדבק כאן לינק לבדיקה")
+
+    st.write("")
+    st.markdown("#### 📊 מדדי מעורבות")
+    col1, col2 = st.columns(2)
+    with col1:
+        followers = st.number_input("עוקבים בחשבון", min_value=1, value=1000)
+        comments = st.number_input("תגובות לסרטון", min_value=0, value=10)
+    with col2:
+        likes = st.number_input("לייקים לסרטון", min_value=0, value=100)
+
+    er = (likes / followers) * 100
+    talkability = (comments / likes) * 100 if likes > 0 else 0
+    
+    st.write("")
+    st.markdown("#### 🚩 דגלי אמינות")
+    q1 = st.checkbox("הבטחה לכסף מהיר / 'ללא מאמץ'")
+    q2 = st.checkbox("מפגן עושר מוגזם (מכוניות/מזומן)")
+    q3 = st.checkbox("לחץ זמן מניפולטיבי ('נותרו מקומות')")
+    q4 = st.checkbox("חוסר שקיפות / אין פנים לעסק")
+    q5 = st.checkbox("הפניה לערוץ טלגרם/וואטסאפ")
+    q6 = st.checkbox("תגובות גנריות (רק אימוג'ים)")
+
+    # חישוב וקביעת תובנה
+    score = 0
+    insight_note = "(מומלץ תמיד להצליב נתונים עם גוגל ולוודא ותק של הפרופיל)"
+
+    if er < 1 and followers > 5000: 
+        score += 25
+        insight_note = "(שים לב: יחס מעורבות נמוך מעיד לרוב על קהל שאינו אורגני או חשבון 'מת')"
+    
+    if likes > 500 and talkability < 0.5: 
+        score += 25
+        insight_note = "(דגל אדום: כמות תגובות מזערית ביחס ללייקים היא סימן מובהק לרכישת לייקים מזויפים)"
+
+    if q1 or q3:
+        score += 25
+        insight_note = "(זהירות: הבטחות לרווח קל ולחץ זמן הם כלים פסיכולוגיים נפוצים במודלים של הונאה)"
+
+    if q5:
+        score += 15
+        insight_note = "(הערה: מעבר לפלטפורמות ללא פיקוח כמו טלגרם מקשה על מעקב ודיווח במקרה של פגיעה)"
+
+    final_score = min(score, 100)
+
+    if st.button("בצע אימות"):
+        st.session_state.analyzed = True
+        st.session_state.final_score = final_score
+        st.session_state.insight = insight_note
+
+    if st.session_state.analyzed:
+        s = st.session_state.final_score
+        fig = go.Figure(go.Indicator(
+            mode = "gauge+number",
+            value = s,
+            number = {'font': {'color': "#FFFFFF", 'size': 50}, 'suffix': "%"},
+            gauge = {
+                'axis': {'range': [None, 100], 'tickcolor': "#FFFFFF"},
+                'bar': {'color': "#FF0000" if s > 50 else "#00FFCC"},
+                'bgcolor': "#111111",
+                'steps': [{'range': [0, 50], 'color': "#003322"}, {'range': [50, 100], 'color': "#330000"}],
+            }
+        ))
+        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', height=250, margin=dict(t=0, b=0))
+        st.plotly_chart(fig)
+
+        # פירוט סיכום מלא
+        if s > 65:
+            st.error("❌ אזהרה: רמת סיכון גבוהה מאוד. נמצאה התאמה למאפייני הונאה.")
+        elif s > 30:
+            st.warning("⚠️ חשד: קיימים ליקויים באמינות המפרסם.")
+        else:
+            st.success("💎 אימות עבר בהצלחה. המדדים נראים תקינים.")
+
+        # הצגת ההערה בסוגריים בתוך תיבת התובנות
+        st.markdown(f'<div class="insight-box">תובנת מערכת: {st.session_state.insight}</div>', unsafe_allow_html=True)
+
+        app_url = "https://auditor-app-7clswzggcjo9setfbyetqi.streamlit.app"
+        msg = f"בדקתי סרטון ב-AUDITOR וקיבלתי מדד סיכון של {s}%! 🛡️\n{app_url}"
+        whatsapp_url = f"https://wa.me/?text={urllib.parse.quote(msg)}"
+        st.markdown(f'<a href="{whatsapp_url}" target="_blank" class="whatsapp-button">שתף תוצאה בוואטסאפ 📱</a>', unsafe_allow_html=True)
+
+if __name__ == "__main__":
+    main()
